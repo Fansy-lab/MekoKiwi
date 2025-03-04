@@ -31,7 +31,7 @@
       />
     </div>
 
-    <UserControlPanel />
+    <!-- <UserVoiceControlPanel /> -->
   </div>
 </template>
 
@@ -41,7 +41,7 @@ import ServerBar from './components/ServerBar.vue'
 import ChannelSidebar from './components/ChannelSidebar.vue'
 import ChatArea from './components/ChatArea.vue'
 import MembersSidebar from './components/MembersSidebar.vue'
-import UserControlPanel from './components/UserControlPanel.vue'
+import UserVoiceControlPanel from './components/UserVoiceControlPanel.vue'
 
 // Active states
 const activeServer = ref(1)
