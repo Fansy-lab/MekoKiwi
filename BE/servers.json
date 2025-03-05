@@ -4,48 +4,48 @@
       "serverId": 1,
       "name": "MekoKiwi",
       "channels": [
-        { "id": 101, "name": "general" },
-        { "id": 102, "name": "random" }
+        { "id": 101, "name": "general", "type": "text" },
+        { "id": 102, "name": "random", "type": "voice" }
       ]
     },
     {
       "serverId": 2,
       "name": "BigGames",
       "channels": [
-        { "id": 201, "name": "announcements" },
-        { "id": 202, "name": "gaming" }
+        { "id": 201, "name": "announcements", "type": "text" },
+        { "id": 202, "name": "gaming", "type": "voice" }
       ]
     },
     {
       "serverId": 3,
       "name": "TechTalk",
       "channels": [
-        { "id": 301, "name": "tech" },
-        { "id": 302, "name": "hardware" }
+        { "id": 301, "name": "tech", "type": "text" },
+        { "id": 302, "name": "hardware", "type": "voice" }
       ]
     },
     {
       "serverId": 4,
       "name": "Entertainment",
       "channels": [
-        { "id": 401, "name": "music" },
-        { "id": 402, "name": "movies" }
+        { "id": 401, "name": "music", "type": "text" },
+        { "id": 402, "name": "movies", "type": "voice" }
       ]
     },
     {
       "serverId": 5,
       "name": "Health",
       "channels": [
-        { "id": 501, "name": "sports" },
-        { "id": 502, "name": "fitness" }
+        { "id": 501, "name": "sports", "type": "text" },
+        { "id": 502, "name": "fitness", "type": "voice" }
       ]
     },
     {
       "serverId": 6,
       "name": "Travel stuff",
       "channels": [
-        { "id": 601, "name": "travel" },
-        { "id": 602, "name": "food" }
+        { "id": 601, "name": "travel", "type": "text" },
+        { "id": 602, "name": "food", "type": "voice" }
       ]
     }
   ]

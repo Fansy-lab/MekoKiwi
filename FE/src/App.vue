@@ -51,7 +51,10 @@ import { useMessagesStore } from './stores/messages_store'
 const activeServer = ref(1)
 const activeChannel = ref(1)
 const activeUser = ref(null)
+const servers = ref([])
+const channels = ref([])
 let socket
+const messagesStore = useMessagesStore()
 
 // UI state
 const isChannelSidebarOpen = ref(true)
@@ -72,6 +75,7 @@ const setActiveServer = (id) => {
   activeServer.value = id
   messagesStore.clearMessages()
   loadMessagesForServer(id)
+  loadChannelsForServer(id)
 }
 
 const setActiveChannel = (id) => {
@@ -83,13 +87,6 @@ const setActiveUser = (id) => {
 }
 
 // Mock data
-const channels = ref([
-  { id: 1, name: 'general', type: 'text' },
-  { id: 2, name: 'announcements', type: 'text' },
-  { id: 3, name: 'voice-chat', type: 'voice' },
-  { id: 4, name: 'resources', type: 'text' },
-  { id: 5, name: 'random', type: 'text' }
-])
 
 const directMessages = ref([
   { id: 1, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/125', online: true },
@@ -127,13 +124,11 @@ const sendMessage = (content) => {
   }
 }
 
-const messagesStore = useMessagesStore()
-
-onMounted(() => {
+onMounted(async () => {
   loading.value = true
   socket = new WebSocket('ws://localhost:8032/ws')
-  loadServers() // Load servers on component mount
-
+  await loadServersAndChannels() // Load servers on component mount
+  await loadChannelsForServer(activeServer.value) // Load channels for the active server
   socket.onopen = () => {
     // Request messages for the active server
     socket.send(
@@ -163,10 +158,18 @@ const loadMessagesForServer = (serverId) => {
     })
   )
 }
-const loadServers = async () => {
+const loadChannelsForServer = (serverId) => {
+  //get the channels from the servers
+  const server = servers.value.find((server) => server.serverId === serverId)
+  if (server) {
+    channels.value = server.channels
+  }
+}
+const loadServersAndChannels = async () => {
   try {
     const response = await axios.get('http://localhost:8032/get_servers')
     servers.value = response.data
+
     console.log('Servers loaded:', response.data)
   } catch (error) {
     console.error('Error loading servers:', error)
