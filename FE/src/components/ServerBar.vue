@@ -71,19 +71,19 @@
               class="flex items-center p-2 rounded-md hover:bg-[rgb(var(--muted))] cursor-pointer"
             >
               <UserIcon size="16" class="mr-2 text-[rgb(var(--primary))]" />
-              <span class="text-sm">Profile</span>
+              <span class="text-sm text-foreground">Profile</span>
             </div>
             <div
               class="flex items-center p-2 rounded-md hover:bg-[rgb(var(--muted))] cursor-pointer"
             >
               <SettingsIcon size="16" class="mr-2 text-[rgb(var(--primary))]" />
-              <span class="text-sm">Settings</span>
+              <span class="text-sm text-foreground">Settings</span>
             </div>
             <div
               class="flex items-center p-2 rounded-md hover:bg-[rgb(var(--muted))] cursor-pointer"
             >
               <LogOutIcon size="16" class="mr-2 text-[rgb(var(--primary))]" />
-              <span class="text-sm">Log Out</span>
+              <span class="text-sm text-foreground">Log Out</span>
             </div>
           </div>
         </div>
