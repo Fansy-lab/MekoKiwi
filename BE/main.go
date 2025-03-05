@@ -3,158 +3,190 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
 	"sync"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/websocket"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
-	CheckOrigin: func(r *http.Request) bool {
-		return true
-	},
-}
-
-var clients = make(map[*websocket.Conn]bool)
-var broadcast = make(chan Message)
-var mutex = &sync.Mutex{}
-var messagesFile = "messages.json"
+var (
+	upgrader     = websocket.Upgrader{ReadBufferSize: 1024, WriteBufferSize: 1024, CheckOrigin: func(r *http.Request) bool { return true }}
+	clients      = make(map[*websocket.Conn]bool)
+	broadcast    = make(chan Message, 100)
+	mutex        = &sync.Mutex{}
+	messagesFile = "messages.json"
+)
 
 type Message struct {
-	ID          int    `json:"id"`
-	UserID      string `json:"userId"`
-	Timestamp   int64  `json:"timestamp"`
-	MessageType int    `json:"messageType"`
-	Content     string `json:"content"`
+	ID        int    `json:"id"`
+	UserID    string `json:"userId"`
+	Timestamp int64  `json:"timestamp"`
+	ServerID  int    `json:"serverId"`
+	Content   string `json:"content"`
+}
+
+type Payload struct {
+	Type     string `json:"type"`
+	ServerID int    `json:"serverId"`
+	Content  string `json:"content"`
+}
+
+type Channel struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type Server struct {
+	ServerID int       `json:"serverId"`
+	Name     string    `json:"name"`
+	Channels []Channel `json:"channels"`
+}
+
+// Fetches the server list
+func getServers() ([]Server, error) {
+	// Open the servers.json file
+	file, err := os.Open("servers.json")
+	if err != nil {
+		return nil, fmt.Errorf("error opening servers.json: %v", err)
+	}
+	defer file.Close()
+
+	// Create a struct to hold the servers from the JSON
+	var data struct {
+		Servers []Server `json:"servers"`
+	}
+
+	// Decode the JSON data from the file
+	if err := json.NewDecoder(file).Decode(&data); err != nil {
+		return nil, fmt.Errorf("error decoding JSON from servers.json: %v", err)
+	}
+
+	// Return the list of servers
+	return data.Servers, nil
 }
 
 func handleWebSocket(w http.ResponseWriter, r *http.Request) {
-	// Upgrade the HTTP connection to a WebSocket connection.
 	conn, err := upgrader.Upgrade(w, r, nil)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("WebSocket upgrade error:", err)
 		return
 	}
 	defer conn.Close()
 
-	// Register the new client
 	mutex.Lock()
 	clients[conn] = true
 	mutex.Unlock()
 
-	// Send existing messages to the new client
-	messages, err := loadMessages()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
-	for _, msg := range messages {
-		msgJSON, err := json.Marshal(msg)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-		err = conn.WriteMessage(websocket.TextMessage, msgJSON)
-		if err != nil {
-			fmt.Println(err)
-			return
-		}
-	}
-
-	// Handle WebSocket messages here
 	for {
-		messageType, content, err := conn.ReadMessage()
+		_, data, err := conn.ReadMessage()
 		if err != nil {
-			fmt.Println(err)
-			mutex.Lock()
-			delete(clients, conn)
-			mutex.Unlock()
-			break
-		}
-		fmt.Printf("In server: Received message: %s\n", content)
-
-		// Generate a random ID for the message
-		messageID := rand.Int()
-
-		// Get the current timestamp
-		timestamp := time.Now().Unix()
-
-		// Create the message object
-		msg := Message{
-			ID:          messageID,
-			UserID:      fmt.Sprintf("%p", conn),
-			Timestamp:   timestamp,
-			MessageType: messageType,
-			Content:     string(content),
+			fmt.Println("Read error:", err)
+			removeClient(conn)
+			return
 		}
 
-		// Send the message to the broadcast channel
-		broadcast <- msg
+		var payload Payload
+		if err := json.Unmarshal(data, &payload); err != nil {
+			fmt.Println("JSON unmarshal error:", err)
+			continue
+		}
+
+		if payload.Type == "get_messages" {
+			sendPreviousMessages(conn, payload.ServerID)
+			continue
+		}
+
+		newMessage := Message{
+			ID:        rand.Int(),
+			UserID:    fmt.Sprintf("%p", conn),
+			Timestamp: time.Now().Unix(),
+			ServerID:  payload.ServerID,
+			Content:   payload.Content,
+		}
+
+		broadcast <- newMessage
 	}
 }
 
 func handleMessages() {
-	for {
-		// Grab the next message from the broadcast channel
-		msg := <-broadcast
-
-		// Save the message to the file
+	for msg := range broadcast {
 		saveMessage(msg)
+		sendToAllClients(msg)
+	}
+}
 
-		// Send it out to every client that is currently connected
-		mutex.Lock()
-		for client := range clients {
-			msgJSON, err := json.Marshal(msg)
-			if err != nil {
-				fmt.Println(err)
-				continue
-			}
-			err = client.WriteMessage(websocket.TextMessage, msgJSON)
-			if err != nil {
-				fmt.Println(err)
-				client.Close()
-				delete(clients, client)
+func sendPreviousMessages(conn *websocket.Conn, serverID int) {
+	messages, err := loadMessages()
+	if err != nil {
+		fmt.Println("Error loading messages:", err)
+		return
+	}
+
+	for _, msg := range messages {
+		if msg.ServerID == serverID {
+			if err := sendMessage(conn, msg); err != nil {
+				return
 			}
 		}
-		mutex.Unlock()
 	}
+}
+
+func sendToAllClients(msg Message) {
+	mutex.Lock()
+	defer mutex.Unlock()
+
+	for client := range clients {
+		if err := sendMessage(client, msg); err != nil {
+			removeClient(client)
+		}
+	}
+}
+
+func sendMessage(conn *websocket.Conn, msg Message) error {
+	msgJSON, err := json.Marshal(msg)
+	if err != nil {
+		fmt.Println("JSON marshal error:", err)
+		return err
+	}
+	return conn.WriteMessage(websocket.TextMessage, msgJSON)
+}
+
+func removeClient(conn *websocket.Conn) {
+	mutex.Lock()
+	defer mutex.Unlock()
+	conn.Close()
+	delete(clients, conn)
 }
 
 func saveMessage(msg Message) {
 	mutex.Lock()
 	defer mutex.Unlock()
 
-	// Read existing messages from the file
 	messages, err := loadMessages()
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error loading messages for saving:", err)
 		return
 	}
 
-	// Append the new message
 	messages = append(messages, msg)
 
-	// Write the updated messages to the file
-	content, err := json.Marshal(messages)
+	data, err := json.Marshal(messages)
 	if err != nil {
-		fmt.Println(err)
+		fmt.Println("JSON marshal error while saving:", err)
 		return
 	}
 
-	err = ioutil.WriteFile(messagesFile, content, 0644)
-	if err != nil {
-		fmt.Println(err)
+	if err := os.WriteFile(messagesFile, data, 0644); err != nil {
+		fmt.Println("File write error:", err)
 	}
 }
 
 func loadMessages() ([]Message, error) {
-	content, err := os.ReadFile(messagesFile)
+	data, err := os.ReadFile(messagesFile)
 	if err != nil {
 		if os.IsNotExist(err) {
 			return []Message{}, nil
@@ -163,33 +195,51 @@ func loadMessages() ([]Message, error) {
 	}
 
 	var messages []Message
-	err = json.Unmarshal(content, &messages)
-	if err != nil {
+	if err := json.Unmarshal(data, &messages); err != nil {
 		return nil, err
 	}
-
 	return messages, nil
 }
 
-func main() {
-	// Load existing messages from the file
-	messages, err := loadMessages()
+// New HTTP handler to get the list of servers
+func getServersHandler(w http.ResponseWriter, r *http.Request) {
+	// Allow cross-origin requests (CORS)
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	// Respond with the server list as JSON
+	servers, err := getServers()
 	if err != nil {
-		fmt.Println(err)
+		http.Error(w, fmt.Sprintf("Error fetching servers: %v", err), http.StatusInternalServerError)
 		return
 	}
 
-	// Send the loaded messages to the broadcast channel
-	go func() {
-		for _, msg := range messages {
-			broadcast <- msg
-		}
-	}()
+	w.Header().Set("Content-Type", "application/json")
+	if err := json.NewEncoder(w).Encode(servers); err != nil {
+		http.Error(w, fmt.Sprintf("Error encoding server data: %v", err), http.StatusInternalServerError)
+	}
+}
 
+func main() {
+	if _, err := loadMessages(); err != nil {
+		fmt.Println("Error loading initial messages:", err)
+	}
+
+	// WebSocket handler
 	http.HandleFunc("/ws", handleWebSocket)
+
+	// New endpoint for getting the list of servers
+	http.HandleFunc("/get_servers", getServersHandler)
+
+	// Apply CORS to all routes using the gorilla handler
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"*"}), // Allow all origins, or specify the frontend URL
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE"}),
+	)(http.DefaultServeMux)
+
 	go handleMessages()
+
 	fmt.Println("WebSocket server is running on :8032/ws")
-	if err := http.ListenAndServe(":8032", nil); err != nil {
-		fmt.Println(err)
+	fmt.Println("HTTP server is running on :8032/get_servers")
+	if err := http.ListenAndServe(":8032", corsHandler); err != nil {
+		fmt.Println("Server error:", err)
 	}
 }

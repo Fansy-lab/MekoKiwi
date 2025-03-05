@@ -17,6 +17,7 @@
       <ChatArea
         v-if="!loading"
         :messages="messagesStore.messages"
+        :channels="channels"
         :activeChannel="activeChannel"
         :isChannelSidebarOpen="isChannelSidebarOpen"
         @toggle-channel-sidebar="toggleChannelSidebar"
@@ -38,12 +39,13 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount } from 'vue'
+import axios from 'axios'
 import ServerBar from './components/ServerBar.vue'
 import ChannelSidebar from './components/ChannelSidebar.vue'
 import ChatArea from './components/ChatArea.vue'
 import MembersSidebar from './components/MembersSidebar.vue'
 import UserVoiceControlPanel from './components/UserVoiceControlPanel.vue'
-import { useMessagesStore } from './stores/messages'
+import { useMessagesStore } from './stores/messages_store'
 
 // Active states
 const activeServer = ref(1)
@@ -68,6 +70,8 @@ const toggleMembersSidebar = () => {
 // Change active items
 const setActiveServer = (id) => {
   activeServer.value = id
+  messagesStore.clearMessages()
+  loadMessagesForServer(id)
 }
 
 const setActiveChannel = (id) => {
@@ -79,16 +83,6 @@ const setActiveUser = (id) => {
 }
 
 // Mock data
-const servers = ref([
-  { id: 1, name: 'Main Server', image: null },
-  { id: 2, name: 'Gaming', image: null },
-  { id: 3, name: 'Study Group', image: null },
-  { id: 4, name: 'Friends', image: null },
-  { id: 5, name: 'Music', image: null },
-  { id: 6, name: 'Art', image: null },
-  { id: 7, name: 'Movies', image: null }
-])
-
 const channels = ref([
   { id: 1, name: 'general', type: 'text' },
   { id: 2, name: 'announcements', type: 'text' },
@@ -125,7 +119,11 @@ const offlineMembers = ref([
 // Methods
 const sendMessage = (content) => {
   if (content.trim()) {
-    socket.send(content)
+    const messagePayload = {
+      serverId: activeServer.value,
+      content: content
+    }
+    socket.send(JSON.stringify(messagePayload))
   }
 }
 
@@ -134,13 +132,19 @@ const messagesStore = useMessagesStore()
 onMounted(() => {
   loading.value = true
   socket = new WebSocket('ws://localhost:8032/ws')
+  loadServers() // Load servers on component mount
 
   socket.onopen = () => {
-    console.log('Real Client: WebSocket connection opened')
+    // Request messages for the active server
+    socket.send(
+      JSON.stringify({
+        type: 'get_messages',
+        serverId: activeServer.value
+      })
+    )
   }
 
   socket.onmessage = (event) => {
-    console.log('Real Client: Received: ' + event.data)
     const message = JSON.parse(event.data)
     messagesStore.addMessage(message)
   }
@@ -150,6 +154,24 @@ onMounted(() => {
   }
   loading.value = false
 })
+
+const loadMessagesForServer = (serverId) => {
+  socket.send(
+    JSON.stringify({
+      type: 'get_messages',
+      serverId: serverId
+    })
+  )
+}
+const loadServers = async () => {
+  try {
+    const response = await axios.get('http://localhost:8032/get_servers')
+    servers.value = response.data
+    console.log('Servers loaded:', response.data)
+  } catch (error) {
+    console.error('Error loading servers:', error)
+  }
+}
 
 onBeforeUnmount(() => {
   if (socket) {

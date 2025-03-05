@@ -16,7 +16,6 @@ interface Message {
 }
 
 export const useMessagesStore = defineStore('messages', () => {
-  const ranomUsername = Math.random().toString(36).substring(7)
   const messages = ref<Message[]>([])
 
   function setMessages(newMessages: Message[]) {
@@ -24,10 +23,13 @@ export const useMessagesStore = defineStore('messages', () => {
   }
 
   function addMessage(message: Message) {
-    var user = { name: ranomUsername, avatar: null }
+    var user = { name: message.userId, avatar: null }
     message.user = user
     messages.value.push(message)
   }
+  function clearMessages() {
+    messages.value = []
+  }
 
-  return { messages, setMessages, addMessage }
+  return { messages, setMessages, addMessage, clearMessages }
 })

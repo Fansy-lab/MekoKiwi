@@ -13,10 +13,10 @@
       <div class="ml-10 md:ml-0">
         <div class="flex items-center">
           <HashIcon size="18" class="mr-2 text-primary" />
-          <span class="font-medium text-foreground">{{ getActiveChannelName() }}</span>
+          <span class="font-medium text-foreground">{{ activeChannelName }}</span>
         </div>
         <div class="text-xs text-muted-foreground">
-          Welcome to the {{ getActiveChannelName() }} channel
+          Welcome to the {{ activeChannelName }} channel
         </div>
       </div>
 
@@ -76,8 +76,8 @@
 </template>
 
 <script setup>
-import { ref, nextTick, onBeforeUnmount } from 'vue'
-import { useMessagesStore } from '../stores/messages'
+import { ref, nextTick, onBeforeUnmount, computed } from 'vue'
+import { useMessagesStore } from '../stores/messages_store'
 
 import {
   HashIcon,
@@ -115,10 +115,11 @@ const newMessage = ref('')
 const messagesStore = useMessagesStore()
 const messagesContainer = ref(null)
 
-const getActiveChannelName = () => {
-  const channel = props.channels.find((c) => c.id === props.activeChannel)
-  return channel ? channel.name : 'general'
-}
+//computed activechannelname
+const activeChannelName = computed(() => {
+  const channel = props.channels.find((channel) => channel.id === props.activeChannel)
+  return channel ? channel.name : 'Unknown channel'
+})
 
 const scrollToBottom = () => {
   nextTick(() => {

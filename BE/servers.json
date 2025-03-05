@@ -1,0 +1,52 @@
+{
+  "servers": [
+    {
+      "serverId": 1,
+      "name": "MekoKiwi",
+      "channels": [
+        { "id": 101, "name": "general" },
+        { "id": 102, "name": "random" }
+      ]
+    },
+    {
+      "serverId": 2,
+      "name": "BigGames",
+      "channels": [
+        { "id": 201, "name": "announcements" },
+        { "id": 202, "name": "gaming" }
+      ]
+    },
+    {
+      "serverId": 3,
+      "name": "TechTalk",
+      "channels": [
+        { "id": 301, "name": "tech" },
+        { "id": 302, "name": "hardware" }
+      ]
+    },
+    {
+      "serverId": 4,
+      "name": "Entertainment",
+      "channels": [
+        { "id": 401, "name": "music" },
+        { "id": 402, "name": "movies" }
+      ]
+    },
+    {
+      "serverId": 5,
+      "name": "Health",
+      "channels": [
+        { "id": 501, "name": "sports" },
+        { "id": 502, "name": "fitness" }
+      ]
+    },
+    {
+      "serverId": 6,
+      "name": "Travel stuff",
+      "channels": [
+        { "id": 601, "name": "travel" },
+        { "id": 602, "name": "food" }
+      ]
+    }
+  ]
+}

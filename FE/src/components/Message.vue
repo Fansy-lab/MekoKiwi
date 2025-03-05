@@ -4,9 +4,11 @@
     <div class="flex-1">
       <div class="flex items-center">
         <span class="font-medium text-primary">{{ message.user.name }}</span>
-        <span class="ml-2 text-xs text-muted-foreground">{{ message.time }}</span>
+        <span class="ml-2 text-xs text-muted-foreground">{{
+          formatTimestamp(message.timestamp)
+        }}</span>
       </div>
-      <p class="text-foreground">{{ message.content }}</p>
+      <p class="text-foreground break-all">{{ message.content }}</p>
 
       <!-- Reactions -->
       <div v-if="showReactions" class="flex mt-2 space-x-2">
@@ -45,4 +47,13 @@ defineProps({
     default: false
   }
 })
+
+const formatTimestamp = (timestamp) => {
+  const date = new Date(timestamp * 1000) // Convert to milliseconds
+
+  const hours = date.getHours().toString().padStart(2, '0')
+  const minutes = date.getMinutes().toString().padStart(2, '0')
+
+  return `${hours}:${minutes}`
+}
 </script>

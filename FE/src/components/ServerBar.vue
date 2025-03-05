@@ -13,15 +13,15 @@
     <div class="flex space-x-3 py-1">
       <div
         v-for="server in servers"
-        :key="server.id"
+        :key="server.serverId"
         class="flex-shrink-0 transition-all duration-200 relative group"
-        :class="server.id === activeServer ? 'scale-110' : ''"
-        @click="$emit('change-server', server.id)"
+        :class="server.serverId === activeServer ? 'scale-110' : ''"
+        @click="$emit('change-server', server.serverId)"
       >
         <div
           class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
           :class="
-            server.id === activeServer
+            server.serverId === activeServer
               ? 'bg-[rgb(var(--card))] ring-2 ring-[rgb(var(--primary))]'
               : 'bg-[rgb(var(--muted))] hover:bg-[rgb(var(--card))]'
           "
