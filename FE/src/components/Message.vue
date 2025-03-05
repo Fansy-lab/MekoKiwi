@@ -11,19 +11,19 @@
       <!-- Reactions -->
       <div v-if="showReactions" class="flex mt-2 space-x-2">
         <div
-          class="bg-muted rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
+          class="bg-muted text-foreground rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
         >
           <span>👍</span>
           <span>2</span>
         </div>
         <div
-          class="bg-muted rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
+          class="bg-muted text-foreground rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
         >
           <span>❤️</span>
           <span>1</span>
         </div>
         <div
-          class="bg-muted rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
+          class="bg-muted text-foreground rounded-full px-2 py-1 text-xs flex items-center space-x-1 cursor-pointer hover:bg-accent"
         >
           <span>+</span>
         </div>

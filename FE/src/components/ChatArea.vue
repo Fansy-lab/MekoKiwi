@@ -42,9 +42,9 @@
     </div>
 
     <!-- Messages -->
-    <div class="flex-1 overflow-y-auto p-4 space-y-6">
+    <div ref="messagesContainer" class="flex-1 overflow-y-auto p-4 space-y-6">
       <Message
-        v-for="(message, index) in messages"
+        v-for="(message, index) in messagesStore.messages"
         :key="message.id"
         :message="message"
         :showReactions="index % 2 === 0"
@@ -76,7 +76,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, nextTick, onBeforeUnmount } from 'vue'
+import { useMessagesStore } from '../stores/messages'
+
 import {
   HashIcon,
   SearchIcon,
@@ -110,16 +112,38 @@ const props = defineProps({
 const emit = defineEmits(['toggle-channel-sidebar', 'toggle-members-sidebar', 'send-message'])
 
 const newMessage = ref('')
+const messagesStore = useMessagesStore()
+const messagesContainer = ref(null)
 
 const getActiveChannelName = () => {
   const channel = props.channels.find((c) => c.id === props.activeChannel)
   return channel ? channel.name : 'general'
 }
 
+const scrollToBottom = () => {
+  nextTick(() => {
+    if (messagesContainer.value) {
+      messagesContainer.value.scrollTop = messagesContainer.value.scrollHeight
+    }
+  })
+}
+
 const sendMessage = () => {
   if (newMessage.value.trim()) {
     emit('send-message', newMessage.value)
     newMessage.value = ''
+    scrollToBottom()
   }
 }
+
+messagesStore.$subscribe((mutation, state) => {
+  scrollToBottom()
+})
+const unsubscribe = messagesStore.$subscribe((mutation, state) => {
+  scrollToBottom()
+})
+
+onBeforeUnmount(() => {
+  unsubscribe()
+})
 </script>
