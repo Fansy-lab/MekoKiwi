@@ -3,6 +3,73 @@
 @tailwind utilities;
 
 @layer base {
+  :root {
+    --background: 20 20 30; /* Darker background for a more balanced tone */
+    --foreground: 240 240 245; /* Softer, lighter text color for better readability */
+    
+    --card: 30 30 40; /* Slightly darker card background */
+    --card-foreground: 240 240 245; /* Lighter text for cards */
+    
+    --popover: 35 35 45; /* Popover background for a subtle difference */
+    --popover-foreground: 240 240 245; /* Consistent lighter text for popover */
+    
+    --primary:70 130 180; /* Slightly lighter blue to enhance visibility */
+    --primary-foreground: 255 255 255; /* White text for primary elements */
+    
+    --secondary: 255 105 97; /* Softer red for secondary elements */
+    --secondary-foreground: 255 255 255; /* White text for secondary elements */
+    
+    --muted: 50 50 60; /* Muted background for subtle elements */
+    --muted-foreground: 170 170 180; /* Lighter muted text color */
+    
+    --accent: 100 200 255; /* Bright accent color for attention-grabbing elements */
+    --accent-foreground: 20 20 30; /* Dark text on accent elements for readability */
+    
+    --destructive: 220 50 50; /* Slightly softened red for destructive actions */
+    --destructive-foreground: 255 255 255; /* White text on destructive elements */
+    
+    --border: 60 60 70; /* Softer border color */
+    --input: 70 70 80; /* Slightly lighter input field background */
+    --ring: 0 132 255; /* Slightly lighter blue for focus rings */
+    
+    --radius: 0.5rem; /* Rounded corners stay the same */
+    
+    --status-online: 70 130 180; 
+    --status-offline: 115 115 115; /* Neutral gray for offline status */
+    --status-away: 245 158 11; /* Yellow for away status */
+    --status-dnd: 220 38 38; /* Red for Do Not Disturb status */
+    
+  }
+
+  .dark {
+    --background: 20 20 20;
+    --foreground: 230 230 230;
+
+    --card: 30 30 30;
+    --card-foreground: 230 230 230;
+
+    --popover: 30 30 30;
+    --popover-foreground: 230 230 230;
+
+    --primary: 99 102 241;
+    --primary-foreground: 255 255 255;
+
+    --secondary: 245 158 11;
+    --secondary-foreground: 20 20 20;
+
+    --muted: 40 40 40;
+    --muted-foreground: 150 150 150;
+
+    --accent: 40 40 40;
+    --accent-foreground: 230 230 230;
+
+    --destructive: 239 68 68;
+    --destructive-foreground: 255 255 255;
+
+    --border: 60 60 60;
+    --input: 60 60 60;
+    --ring: 99 102 241;
+  }
   *,
   *::before,
   *::after {

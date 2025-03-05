@@ -4,24 +4,24 @@
       :class="[
         sizeClasses[size],
         'rounded-full flex items-center justify-center overflow-hidden',
-        bgColor || 'bg-gray-300',
-        { 'opacity-70': opacity < 100 }
+        bgColor || 'bg-muted',
+        { [`opacity-${opacity}`]: opacity < 100 }
       ]"
     >
       <img v-if="image" :src="image" :alt="name" class="w-full h-full object-cover" />
-      <span v-else :class="['text-xs font-bold', textColor || 'text-gray-600']">{{
-        name.substring(0, 2)
+      <span v-else :class="['text-xs font-bold', textColor || 'text-muted-foreground']">{{
+        name.substring(0, 2).toUpperCase()
       }}</span>
     </div>
     <div
       v-if="status"
-      class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-gray-100"
-      :class="statusClasses[status]"
+      class="absolute bottom-0 right-0 w-3 h-3 rounded-full border-2 border-background"
+      :class="[statusClasses[status]]"
     ></div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { computed } from 'vue'
 
 const props = defineProps({
@@ -34,14 +34,12 @@ const props = defineProps({
     default: null
   },
   status: {
-    type: String,
-    default: null,
-    validator: (value) => ['online', 'offline', 'away', 'dnd', null].includes(value)
+    type: String as () => 'online' | 'offline' | 'away' | 'dnd' | null,
+    default: null
   },
   size: {
-    type: String,
-    default: 'sm',
-    validator: (value) => ['sm', 'md', 'lg'].includes(value)
+    type: String as () => 'sm' | 'md' | 'lg',
+    default: 'sm'
   },
   bgColor: {
     type: String,
@@ -57,7 +55,8 @@ const props = defineProps({
   },
   opacity: {
     type: Number,
-    default: 100
+    default: 100,
+    validator: (value: number) => value >= 0 && value <= 100
   }
 })
 
@@ -68,9 +67,9 @@ const sizeClasses = {
 }
 
 const statusClasses = {
-  online: 'bg-green-500',
-  offline: 'bg-gray-400',
-  away: 'bg-yellow-500',
-  dnd: 'bg-red-500'
+  online: 'bg-status-online',
+  offline: 'bg-status-offline',
+  away: 'bg-status-away',
+  dnd: 'bg-status-dnd'
 }
 </script>
