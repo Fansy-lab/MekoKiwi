@@ -49,7 +49,7 @@
           <div
             v-for="member in offlineMembers"
             :key="member.id"
-            class="flex items-center p-2 rounded-lg hover:bg-accent cursor-pointer"
+            class="flex items-center p-2 rounded-lg hover:bg-card cursor-pointer"
           >
             <UserAvatar
               :name="member.name"

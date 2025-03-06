@@ -74,12 +74,14 @@ const toggleMembersSidebar = () => {
 const setActiveServer = (id) => {
   activeServer.value = id
   messagesStore.clearMessages()
-  loadMessagesForServer(id)
   loadChannelsForServer(id)
+  setActiveChannel(channels.value[0].id)
 }
 
 const setActiveChannel = (id) => {
   activeChannel.value = id
+  messagesStore.clearMessages()
+  loadMessagesForChannel(activeChannel.value)
 }
 
 const setActiveUser = (id) => {
@@ -117,7 +119,7 @@ const offlineMembers = ref([
 const sendMessage = (content) => {
   if (content.trim()) {
     const messagePayload = {
-      serverId: activeServer.value,
+      channelId: activeChannel.value,
       content: content
     }
     socket.send(JSON.stringify(messagePayload))
@@ -129,12 +131,13 @@ onMounted(async () => {
   socket = new WebSocket('ws://localhost:8032/ws')
   await loadServersAndChannels() // Load servers on component mount
   await loadChannelsForServer(activeServer.value) // Load channels for the active server
+
   socket.onopen = () => {
     // Request messages for the active server
     socket.send(
       JSON.stringify({
         type: 'get_messages',
-        serverId: activeServer.value
+        channelId: channels.value[0].id
       })
     )
   }
@@ -150,11 +153,11 @@ onMounted(async () => {
   loading.value = false
 })
 
-const loadMessagesForServer = (serverId) => {
+const loadMessagesForChannel = (channelId) => {
   socket.send(
     JSON.stringify({
       type: 'get_messages',
-      serverId: serverId
+      channelId: channelId
     })
   )
 }

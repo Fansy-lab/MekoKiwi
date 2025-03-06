@@ -25,14 +25,14 @@ type Message struct {
 	ID        int    `json:"id"`
 	UserID    string `json:"userId"`
 	Timestamp int64  `json:"timestamp"`
-	ServerID  int    `json:"serverId"`
+	ChannelID int    `json:"channelId"`
 	Content   string `json:"content"`
 }
 
 type Payload struct {
-	Type     string `json:"type"`
-	ServerID int    `json:"serverId"`
-	Content  string `json:"content"`
+	Type      string `json:"type"`
+	ChannelId int    `json:"channelId"`
+	Content   string `json:"content"`
 }
 
 type Channel struct {
@@ -97,7 +97,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 		}
 
 		if payload.Type == "get_messages" {
-			sendPreviousMessages(conn, payload.ServerID)
+			sendPreviousMessages(conn, payload.ChannelId)
 			continue
 		}
 
@@ -105,7 +105,7 @@ func handleWebSocket(w http.ResponseWriter, r *http.Request) {
 			ID:        rand.Int(),
 			UserID:    fmt.Sprintf("%p", conn),
 			Timestamp: time.Now().Unix(),
-			ServerID:  payload.ServerID,
+			ChannelID: payload.ChannelId,
 			Content:   payload.Content,
 		}
 
@@ -120,7 +120,7 @@ func handleMessages() {
 	}
 }
 
-func sendPreviousMessages(conn *websocket.Conn, serverID int) {
+func sendPreviousMessages(conn *websocket.Conn, channelID int) {
 	messages, err := loadMessages()
 	if err != nil {
 		fmt.Println("Error loading messages:", err)
@@ -128,7 +128,7 @@ func sendPreviousMessages(conn *websocket.Conn, serverID int) {
 	}
 
 	for _, msg := range messages {
-		if msg.ServerID == serverID {
+		if msg.ChannelID == channelID {
 			if err := sendMessage(conn, msg); err != nil {
 				return
 			}
