@@ -1,43 +1,39 @@
 <template>
   <div class="h-screen w-screen flex flex-col bg-gray-50 text-gray-800">
     <ServerBar :servers="servers" :activeServer="activeServer" @change-server="setActiveServer" />
-    <div v-if="isDashboardOpen">
-      <Dashboard></Dashboard>
+    <Dashboard v-if="isDashboardOpen"></Dashboard>
+    <div class="flex-1 flex overflow-hidden">
+      <ChannelSidebar
+        :channels="channels"
+        :directMessages="directMessages"
+        :activeChannel="activeChannel"
+        :activeUser="activeUser"
+        :isOpen="isChannelSidebarOpen"
+        @toggle="toggleChannelSidebar"
+        @change-channel="setActiveChannel"
+        @change-user="setActiveUser"
+      />
+
+      <ChatArea
+        v-if="!loading"
+        :messages="messagesStore.messages"
+        :channels="channels"
+        :activeChannel="activeChannel"
+        :isChannelSidebarOpen="isChannelSidebarOpen"
+        @toggle-channel-sidebar="toggleChannelSidebar"
+        @toggle-members-sidebar="toggleMembersSidebar"
+        @send-message="sendMessage"
+      />
+
+      <MembersSidebar
+        :onlineMembers="onlineMembers"
+        :offlineMembers="offlineMembers"
+        :isOpen="isMembersSidebarOpen"
+        @toggle="toggleMembersSidebar"
+      />
     </div>
-    <div v-else>
-      <div class="flex-1 flex overflow-hidden">
-        <ChannelSidebar
-          :channels="channels"
-          :directMessages="directMessages"
-          :activeChannel="activeChannel"
-          :activeUser="activeUser"
-          :isOpen="isChannelSidebarOpen"
-          @toggle="toggleChannelSidebar"
-          @change-channel="setActiveChannel"
-          @change-user="setActiveUser"
-        />
 
-        <ChatArea
-          v-if="!loading"
-          :messages="messagesStore.messages"
-          :channels="channels"
-          :activeChannel="activeChannel"
-          :isChannelSidebarOpen="isChannelSidebarOpen"
-          @toggle-channel-sidebar="toggleChannelSidebar"
-          @toggle-members-sidebar="toggleMembersSidebar"
-          @send-message="sendMessage"
-        />
-
-        <MembersSidebar
-          :onlineMembers="onlineMembers"
-          :offlineMembers="offlineMembers"
-          :isOpen="isMembersSidebarOpen"
-          @toggle="toggleMembersSidebar"
-        />
-      </div>
-
-      <!-- <UserVoiceControlPanel /> -->
-    </div>
+    <!-- <UserVoiceControlPanel /> -->
   </div>
 </template>
 

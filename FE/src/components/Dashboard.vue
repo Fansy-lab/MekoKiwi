@@ -338,7 +338,3 @@ const openChat = (userId) => {
   // Implementation would depend on your routing setup
 }
 </script>
-
-<style scoped>
-/* Add any additional styles if needed */
-</style>
