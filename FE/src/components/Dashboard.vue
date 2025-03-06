@@ -3,35 +3,42 @@
     <!-- Dashboard Content -->
     <div class="p-6 flex flex-col gap-6">
       <!-- Welcome Section -->
-      <div class="bg-gradient-to-r from-accent to-[#7289da] rounded-lg p-6 text-white">
-        <h2 class="text-2xl mb-2">Welcome back, {{ currentUser.name }}!</h2>
-        <p>{{ getGreeting() }}</p>
+      <div class="bg-background rounded-lg p-6 flex items-center gap-4">
+        <img
+          :src="currentUser.avatar"
+          :alt="currentUser.name"
+          class="w-12 h-12 rounded-full object-cover"
+        />
+        <div>
+          <h2 class="text-2xl font-semibold text-primary">Welcome back, {{ currentUser.name }}!</h2>
+          <p class="text-muted-foreground">{{ getGreeting() }}</p>
+        </div>
       </div>
 
       <!-- Stats Overview -->
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-card rounded-lg p-4 flex items-center gap-4">
+        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
           <UsersIcon size="24" class="text-accent" />
           <div>
             <h3 class="text-2xl font-bold mb-1">{{ stats.onlineFriends }}</h3>
             <p class="text-muted-foreground text-sm">Friends Online</p>
           </div>
         </div>
-        <div class="bg-card rounded-lg p-4 flex items-center gap-4">
+        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
           <MessageSquareIcon size="24" class="text-accent" />
           <div>
             <h3 class="text-2xl font-bold mb-1">{{ stats.unreadMessages }}</h3>
             <p class="text-muted-foreground text-sm">Unread Messages</p>
           </div>
         </div>
-        <div class="bg-card rounded-lg p-4 flex items-center gap-4">
+        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
           <BellIcon size="24" class="text-accent" />
           <div>
             <h3 class="text-2xl font-bold mb-1">{{ stats.notifications }}</h3>
             <p class="text-muted-foreground text-sm">Notifications</p>
           </div>
         </div>
-        <div class="bg-card rounded-lg p-4 flex items-center gap-4">
+        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
           <ServerIcon size="24" class="text-accent" />
           <div>
             <h3 class="text-2xl font-bold mb-1">{{ stats.servers }}</h3>
@@ -43,7 +50,7 @@
       <!-- Main Dashboard Grid -->
       <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
         <!-- Recent Activity -->
-        <div class="bg-card rounded-lg p-4 flex flex-col gap-4">
+        <div class="bg-background rounded-lg p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Recent Activity</h3>
             <button class="text-accent text-sm hover:underline">View All</button>
@@ -69,7 +76,7 @@
         </div>
 
         <!-- Your Servers -->
-        <div class="bg-card rounded-lg p-4 flex flex-col gap-4">
+        <div class="bg-background rounded-lg p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Your Servers</h3>
             <button class="text-accent text-sm hover:underline">View All</button>
@@ -101,7 +108,7 @@
         </div>
 
         <!-- Direct Messages -->
-        <div class="bg-card rounded-lg p-4 flex flex-col gap-4">
+        <div class="bg-background rounded-lg p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Direct Messages</h3>
             <button class="text-accent text-sm hover:underline">View All</button>
@@ -132,7 +139,7 @@
         </div>
 
         <!-- Upcoming Events -->
-        <div class="bg-card rounded-lg p-4 flex flex-col gap-4">
+        <div class="bg-background rounded-lg p-4 flex flex-col gap-4">
           <div class="flex justify-between items-center">
             <h3 class="text-lg font-semibold">Upcoming Events</h3>
             <button class="text-accent text-sm hover:underline">View All</button>
@@ -144,7 +151,7 @@
               class="flex items-center p-2 rounded-lg bg-secondary-muted"
             >
               <div
-                class="flex flex-col items-center justify-center w-10 h-10 bg-accent rounded-lg mr-3"
+                class="flex flex-col items-center justify-center w-10 h-10 bg-card border-muted border-solid border rounded-lg mr-3"
               >
                 <span class="text-lg font-bold leading-none">{{ event.day }}</span>
                 <span class="text-xs uppercase">{{ event.month }}</span>
@@ -154,7 +161,7 @@
                 <p class="text-xs text-muted-foreground">{{ event.time }} • {{ event.server }}</p>
               </div>
               <button
-                class="bg-accent text-white rounded-md px-3 py-1 text-xs font-semibold flex items-center gap-1 hover:bg-accent-foreground"
+                class="rounded-md px-3 py-1 text-xs font-semibold flex items-center gap-1 hover:bg-accent-foreground bg-card border-muted border-solid border"
               >
                 <CalendarIcon size="16" />
                 <span>RSVP</span>
