@@ -1,39 +1,43 @@
 <template>
   <div class="h-screen w-screen flex flex-col bg-gray-50 text-gray-800">
     <ServerBar :servers="servers" :activeServer="activeServer" @change-server="setActiveServer" />
-
-    <div class="flex-1 flex overflow-hidden">
-      <ChannelSidebar
-        :channels="channels"
-        :directMessages="directMessages"
-        :activeChannel="activeChannel"
-        :activeUser="activeUser"
-        :isOpen="isChannelSidebarOpen"
-        @toggle="toggleChannelSidebar"
-        @change-channel="setActiveChannel"
-        @change-user="setActiveUser"
-      />
-
-      <ChatArea
-        v-if="!loading"
-        :messages="messagesStore.messages"
-        :channels="channels"
-        :activeChannel="activeChannel"
-        :isChannelSidebarOpen="isChannelSidebarOpen"
-        @toggle-channel-sidebar="toggleChannelSidebar"
-        @toggle-members-sidebar="toggleMembersSidebar"
-        @send-message="sendMessage"
-      />
-
-      <MembersSidebar
-        :onlineMembers="onlineMembers"
-        :offlineMembers="offlineMembers"
-        :isOpen="isMembersSidebarOpen"
-        @toggle="toggleMembersSidebar"
-      />
+    <div v-if="isDashboardOpen">
+      <Dashboard></Dashboard>
     </div>
+    <div v-else>
+      <div class="flex-1 flex overflow-hidden">
+        <ChannelSidebar
+          :channels="channels"
+          :directMessages="directMessages"
+          :activeChannel="activeChannel"
+          :activeUser="activeUser"
+          :isOpen="isChannelSidebarOpen"
+          @toggle="toggleChannelSidebar"
+          @change-channel="setActiveChannel"
+          @change-user="setActiveUser"
+        />
 
-    <!-- <UserVoiceControlPanel /> -->
+        <ChatArea
+          v-if="!loading"
+          :messages="messagesStore.messages"
+          :channels="channels"
+          :activeChannel="activeChannel"
+          :isChannelSidebarOpen="isChannelSidebarOpen"
+          @toggle-channel-sidebar="toggleChannelSidebar"
+          @toggle-members-sidebar="toggleMembersSidebar"
+          @send-message="sendMessage"
+        />
+
+        <MembersSidebar
+          :onlineMembers="onlineMembers"
+          :offlineMembers="offlineMembers"
+          :isOpen="isMembersSidebarOpen"
+          @toggle="toggleMembersSidebar"
+        />
+      </div>
+
+      <!-- <UserVoiceControlPanel /> -->
+    </div>
   </div>
 </template>
 
@@ -44,6 +48,7 @@ import ServerBar from './components/ServerBar.vue'
 import ChannelSidebar from './components/ChannelSidebar.vue'
 import ChatArea from './components/ChatArea.vue'
 import MembersSidebar from './components/MembersSidebar.vue'
+import Dashboard from './components/Dashboard.vue'
 import UserVoiceControlPanel from './components/UserVoiceControlPanel.vue'
 import { useMessagesStore } from './stores/messages_store'
 
@@ -53,6 +58,7 @@ const activeChannel = ref(1)
 const activeUser = ref(null)
 const servers = ref([])
 const channels = ref([])
+const isDashboardOpen = ref(false)
 let socket
 const messagesStore = useMessagesStore()
 
@@ -72,6 +78,12 @@ const toggleMembersSidebar = () => {
 
 // Change active items
 const setActiveServer = (id) => {
+  if (id == null) {
+    isDashboardOpen.value = true
+    activeServer.value = null
+    return
+  }
+  isDashboardOpen.value = false
   activeServer.value = id
   messagesStore.clearMessages()
   loadChannelsForServer(id)
@@ -92,26 +104,26 @@ const setActiveUser = (id) => {
 
 const directMessages = ref([
   { id: 1, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/125', online: true },
-  { id: 2, name: 'John Doe', avatar: null, online: true },
+  { id: 2, name: 'John Doe', avatar: 'https://i.pravatar.cc/112', online: true },
   { id: 3, name: 'Alice Johnson', avatar: 'https://i.pravatar.cc/125', online: false },
-  { id: 4, name: 'Bob Williams', avatar: null, online: true }
+  { id: 4, name: 'Bob Williams', avatar: 'https://i.pravatar.cc/154', online: true }
 ])
 
 const onlineMembers = ref([
-  { id: 1, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/125' },
-  { id: 2, name: 'John Doe', avatar: null },
-  { id: 4, name: 'Bob Williams', avatar: null },
+  { id: 1, name: 'Jane Smith', avatar: 'https://i.pravatar.cc/115' },
+  { id: 2, name: 'John Doe', avatar: 'https://i.pravatar.cc/133' },
+  { id: 4, name: 'Bob Williams', avatar: 'https://i.pravatar.cc/111' },
   { id: 6, name: 'Mike Johnson', avatar: 'https://i.pravatar.cc/125' },
-  { id: 7, name: 'Sarah Parker', avatar: null }
+  { id: 7, name: 'Sarah Parker', avatar: 'https://i.pravatar.cc/100' }
 ])
 
 const offlineMembers = ref([
   { id: 3, name: 'Alice Johnson', avatar: 'https://i.pravatar.cc/125' },
-  { id: 5, name: 'Emma Davis', avatar: null },
+  { id: 5, name: 'Emma Davis', avatar: 'https://i.pravatar.cc/33' },
   { id: 8, name: 'Tom Wilson', avatar: 'https://i.pravatar.cc/125' },
-  { id: 9, name: 'Lisa Brown', avatar: null },
+  { id: 9, name: 'Lisa Brown', avatar: 'https://i.pravatar.cc/167' },
   { id: 10, name: 'David Miller', avatar: 'https://i.pravatar.cc/125' },
-  { id: 11, name: 'Chris Taylor', avatar: null },
+  { id: 11, name: 'Chris Taylor', avatar: 'https://i.pravatar.cc/134' },
   { id: 12, name: 'Olivia White', avatar: 'https://i.pravatar.cc/125' }
 ])
 
@@ -172,8 +184,10 @@ const loadServersAndChannels = async () => {
   try {
     const response = await axios.get('http://localhost:8032/get_servers')
     servers.value = response.data
-
-    console.log('Servers loaded:', response.data)
+    //loop through the servers and set static image
+    servers.value.forEach((server) => {
+      server.image = `https://api.lorem.space/image/game?w=32&h=48`
+    })
   } catch (error) {
     console.error('Error loading servers:', error)
   }

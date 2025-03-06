@@ -3,10 +3,13 @@
     class="bg-[rgb(var(--muted))] border-b border-solid border-b-[rgb(var(--muted-foreground))] p-2 flex items-center"
   >
     <div class="flex-shrink-0 mr-4 ml-2">
-      <div
-        class="w-10 h-10 bg-[rgb(var(--card))] rounded-full flex items-center justify-center cursor-pointer"
-      >
-        <HomeIcon size="20" class="text-[rgb(var(--foreground))]" />
+      <div class="flex items-center justify-center cursor-pointer">
+        <img
+          @click="$emit('change-server', null)"
+          src="@/assets/images/logo_192x192.png"
+          class="w-8 h-8"
+          alt="MekoKiwi"
+        />
       </div>
     </div>
 
@@ -19,7 +22,7 @@
         @click="$emit('change-server', server.serverId)"
       >
         <div
-          class="w-10 h-10 rounded-full flex items-center justify-center cursor-pointer"
+          class="w-7 h-7 rounded-full flex items-center justify-center cursor-pointer"
           :class="
             server.serverId === activeServer
               ? 'bg-[rgb(var(--card))] ring-2 ring-[rgb(var(--primary))]'
@@ -29,7 +32,7 @@
           <img
             v-if="server.image"
             :src="server.image"
-            class="w-6 h-6 rounded-full"
+            class="w-7 h-7 rounded-full"
             :alt="server.name"
           />
           <span v-else class="text-sm font-bold text-[rgb(var(--foreground))]">{{
@@ -81,6 +84,16 @@
             </div>
             <div
               class="flex items-center p-2 rounded-md hover:bg-[rgb(var(--muted))] cursor-pointer"
+              @click="toggleTheme"
+            >
+              <SunIcon size="16" v-if="isDarkTheme" class="mr-2 text-[rgb(var(--primary))]" />
+              <MoonIcon size="16" v-else class="mr-2 text-[rgb(var(--primary))]" />
+              <span class="text-sm text-foreground">
+                {{ isDarkTheme ? 'Light' : 'Dark' }} theme
+              </span>
+            </div>
+            <div
+              class="flex items-center p-2 rounded-md hover:bg-[rgb(var(--muted))] cursor-pointer"
             >
               <LogOutIcon size="16" class="mr-2 text-[rgb(var(--primary))]" />
               <span class="text-sm text-foreground">Log Out</span>
@@ -93,7 +106,16 @@
 </template>
 
 <script setup>
-import { HomeIcon, PlusIcon, SettingsIcon, UserIcon, LogOutIcon } from 'lucide-vue-next'
+import { ref } from 'vue'
+import {
+  HomeIcon,
+  PlusIcon,
+  SettingsIcon,
+  UserIcon,
+  LogOutIcon,
+  SunIcon,
+  MoonIcon
+} from 'lucide-vue-next'
 
 defineProps({
   servers: {
@@ -102,9 +124,24 @@ defineProps({
   },
   activeServer: {
     type: Number,
-    required: true
+    default: null // Set default value to null to make it optional
   }
 })
 
 defineEmits(['change-server'])
+
+const isDarkTheme = ref(false)
+
+const toggleTheme = () => {
+  isDarkTheme.value = !isDarkTheme.value
+  if (isDarkTheme.value) {
+    document.documentElement.classList.add('dark')
+  } else {
+    document.documentElement.classList.remove('dark')
+  }
+}
 </script>
+
+<style scoped>
+/* Add any additional styles if needed */
+</style>

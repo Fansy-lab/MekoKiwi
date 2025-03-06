@@ -4,6 +4,43 @@
 
 @layer base {
   :root {
+      --background: 240 250 240; /* Soft off-white with a greenish tint */
+      --foreground: 30 40 30; /* Dark green for text readability */
+      
+      --card: 230 245 230; /* Light greenish background for cards */
+      --card-foreground: 30 50 30; /* Darker green for contrast */
+      
+      --popover: 220 240 255; /* Light blue for subtle contrast */
+      --popover-foreground: 30 50 50; /* Darker blue-green for readability */
+      
+      --primary: 40 160 40; /* Natural green for primary elements */
+      --primary-foreground: 255 255 255; /* White text for primary elements */
+      
+      --secondary: 255 200 0; /* Bright yellow for secondary elements */
+      --secondary-foreground: 40 40 20; /* Dark text for contrast */
+      
+      --muted: 210 225 210; /* Soft muted green for backgrounds */
+      --muted-foreground: 80 100 80; /* Medium-dark green for subtle text */
+      
+      --accent: 100 200 255; /* Bright blue accent */
+      --accent-foreground: 20 40 50; /* Darker blue for contrast */
+      
+      --destructive: 200 50 50; /* Softer red for destructive actions */
+      --destructive-foreground: 255 255 255; /* White text for destructive elements */
+      
+      --border: 180 200 190; /* Soft greenish-gray for borders */
+      --input: 200 220 210; /* Light greenish input field background */
+      --ring: 50 150 255; /* Medium blue for focus rings */
+      
+      --radius: 0.5rem; /* Rounded corners remain the same */
+      
+      --status-online: 40 160 40; /* Green for online status */
+      --status-offline: 150 150 150; /* Neutral gray for offline status */
+      --status-away: 245 158 11; /* Yellow for away status */
+      --status-dnd: 220 38 38; /* Red for Do Not Disturb status */
+  
+}
+  .dark {
     --background: 10 20 30; /* Dark blue-green background for depth */
     --foreground: 235 255 220; /* Soft, light greenish-white for readability */
     
@@ -38,37 +75,6 @@
     --status-offline: 115 115 115; /* Neutral gray for offline status */
     --status-away: 245 158 11; /* Yellow for away status */
     --status-dnd: 220 38 38; /* Red for Do Not Disturb status */
-}
-
-
-  .dark {
-    --background: 20 20 20;
-    --foreground: 230 230 230;
-
-    --card: 30 30 30;
-    --card-foreground: 230 230 230;
-
-    --popover: 30 30 30;
-    --popover-foreground: 230 230 230;
-
-    --primary: 99 102 241;
-    --primary-foreground: 255 255 255;
-
-    --secondary: 245 158 11;
-    --secondary-foreground: 20 20 20;
-
-    --muted: 40 40 40;
-    --muted-foreground: 150 150 150;
-
-    --accent: 40 40 40;
-    --accent-foreground: 230 230 230;
-
-    --destructive: 239 68 68;
-    --destructive-foreground: 255 255 255;
-
-    --border: 60 60 60;
-    --input: 60 60 60;
-    --ring: 99 102 241;
   }
   *,
   *::before,
