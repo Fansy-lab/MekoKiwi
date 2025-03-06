@@ -3,9 +3,9 @@
     <!-- Toggle button for mobile -->
     <button
       @click="$emit('toggle-channel-sidebar')"
-      class="absolute top-4 left-4 p-2 bg-accent rounded-full text-primary hover:bg-accent-foreground md:hidden z-10"
+      class="absolute top-4 left-4 p-2 bg-muted rounded-full text-primary hover:bg-accent-foreground md:hidden z-10"
     >
-      <MenuIcon size="18" />
+      <ArrowLeftIcon size="18" />
     </button>
 
     <!-- Chat header -->
@@ -21,7 +21,7 @@
       </div>
 
       <div class="ml-auto flex items-center space-x-3">
-        <div class="relative">
+        <div class="relative hidden sm:block">
           <SearchIcon
             size="18"
             class="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground"
@@ -48,11 +48,12 @@
         :key="message.id"
         :message="message"
         :showReactions="index % 2 === 0"
+        :isMobileView="isMobileView"
       />
     </div>
 
     <!-- Message input -->
-    <div class="p-4 border-t border-border">
+    <div class="p-2 sm:p-4 border-t border-border">
       <div class="flex items-center bg-muted rounded-xl p-1">
         <button class="p-2 text-primary hover:text-primary-emphasis hover:bg-accent rounded-lg">
           <PlusCircleIcon size="20" />
@@ -60,14 +61,18 @@
         <input
           type="text"
           placeholder="Message #general"
-          class="flex-1 bg-transparent border-none focus:outline-none px-3 py-2 text-foreground"
+          class="flex-1 bg-transparent border-none focus:outline-none px-2 sm:px-3 py-2 text-foreground text-sm sm:text-base"
           v-model="newMessage"
           @keyup.enter="sendMessage"
         />
-        <button class="p-2 text-primary hover:text-primary-emphasis hover:bg-accent rounded-lg">
+        <button
+          class="p-2 text-primary hover:text-primary-emphasis hover:bg-accent rounded-lg hidden sm:block"
+        >
           <SmileIcon size="20" />
         </button>
-        <button class="p-2 text-primary hover:text-primary-emphasis hover:bg-accent rounded-lg">
+        <button
+          class="p-2 text-primary hover:text-primary-emphasis hover:bg-accent rounded-lg hidden sm:block"
+        >
           <ImageIcon size="20" />
         </button>
       </div>
@@ -86,7 +91,8 @@ import {
   PlusCircleIcon,
   SmileIcon,
   ImageIcon,
-  MenuIcon
+  MenuIcon,
+  ArrowLeftIcon
 } from 'lucide-vue-next'
 import Message from './Message.vue'
 
@@ -97,7 +103,7 @@ const props = defineProps({
   },
   activeChannel: {
     type: Number,
-    required: true
+    required: false
   },
   channels: {
     type: Array,
@@ -106,6 +112,10 @@ const props = defineProps({
   isChannelSidebarOpen: {
     type: Boolean,
     default: true
+  },
+  isMobileView: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -140,6 +150,7 @@ const sendMessage = () => {
 messagesStore.$subscribe((mutation, state) => {
   scrollToBottom()
 })
+
 const unsubscribe = messagesStore.$subscribe((mutation, state) => {
   scrollToBottom()
 })

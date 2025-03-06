@@ -1,14 +1,19 @@
 <template>
   <div
-    class="bg-muted w-64 flex-shrink-0 overflow-y-auto transition-all duration-300"
-    :class="isOpen ? 'translate-x-0' : 'translate-x-full lg:translate-x-0'"
+    class="bg-muted flex-shrink-0 overflow-y-auto transition-all duration-300 fixed md:relative z-30 right-0"
+    :class="[
+      isOpen ? 'translate-x-0' : 'translate-x-full',
+      isMobileView
+        ? 'w-[80%] max-w-[280px] h-screen fixed top-0'
+        : 'w-64 md:translate-x-0 md:h-[calc(100vh-3.5rem)] '
+    ]"
   >
     <div class="p-4">
       <div class="flex items-center justify-between mb-6">
         <h2 class="text-lg font-bold text-primary">Members</h2>
         <button
           @click="$emit('toggle')"
-          class="p-2 bg-accent rounded-full text-primary hover:bg-accent-foreground lg:hidden"
+          class="p-2 bg-background rounded-full text-primary hover:bg-accent-foreground md:hidden"
         >
           <XIcon size="18" />
         </button>
@@ -86,6 +91,10 @@ defineProps({
   isOpen: {
     type: Boolean,
     default: true
+  },
+  isMobileView: {
+    type: Boolean,
+    default: false
   }
 })
 

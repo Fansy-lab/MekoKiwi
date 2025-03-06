@@ -1,48 +1,50 @@
 <template>
   <div class="flex flex-col h-full w-full bg-muted text-primary overflow-y-auto">
     <!-- Dashboard Content -->
-    <div class="p-6 flex flex-col gap-6">
+    <div class="p-4 sm:p-6 flex flex-col gap-4 sm:gap-6">
       <!-- Welcome Section -->
-      <div class="bg-background rounded-lg p-6 flex items-center gap-4">
+      <div class="bg-background rounded-lg p-4 sm:p-6 flex flex-col sm:flex-row items-center gap-4">
         <img
           :src="currentUser.avatar"
           :alt="currentUser.name"
           class="w-12 h-12 rounded-full object-cover"
         />
-        <div>
-          <h2 class="text-2xl font-semibold text-primary">Welcome back, {{ currentUser.name }}!</h2>
-          <p class="text-muted-foreground">{{ getGreeting() }}</p>
+        <div class="text-center sm:text-left">
+          <h2 class="text-xl sm:text-2xl font-semibold text-primary">
+            Welcome back, {{ currentUser.name }}!
+          </h2>
+          <p class="text-muted-foreground text-sm sm:text-base">{{ getGreeting() }}</p>
         </div>
       </div>
 
       <!-- Stats Overview -->
-      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
-          <UsersIcon size="24" class="text-accent" />
+      <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4">
+        <div class="bg-background rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
+          <UsersIcon size="20" class="text-accent hidden sm:block" />
           <div>
-            <h3 class="text-2xl font-bold mb-1">{{ stats.onlineFriends }}</h3>
-            <p class="text-muted-foreground text-sm">Friends Online</p>
+            <h3 class="text-lg sm:text-2xl font-bold mb-0 sm:mb-1">{{ stats.onlineFriends }}</h3>
+            <p class="text-muted-foreground text-xs sm:text-sm">Friends Online</p>
           </div>
         </div>
-        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
-          <MessageSquareIcon size="24" class="text-accent" />
+        <div class="bg-background rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
+          <MessageSquareIcon size="20" class="text-accent hidden sm:block" />
           <div>
-            <h3 class="text-2xl font-bold mb-1">{{ stats.unreadMessages }}</h3>
-            <p class="text-muted-foreground text-sm">Unread Messages</p>
+            <h3 class="text-lg sm:text-2xl font-bold mb-0 sm:mb-1">{{ stats.unreadMessages }}</h3>
+            <p class="text-muted-foreground text-xs sm:text-sm">Unread Messages</p>
           </div>
         </div>
-        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
-          <BellIcon size="24" class="text-accent" />
+        <div class="bg-background rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
+          <BellIcon size="20" class="text-accent hidden sm:block" />
           <div>
-            <h3 class="text-2xl font-bold mb-1">{{ stats.notifications }}</h3>
-            <p class="text-muted-foreground text-sm">Notifications</p>
+            <h3 class="text-lg sm:text-2xl font-bold mb-0 sm:mb-1">{{ stats.notifications }}</h3>
+            <p class="text-muted-foreground text-xs sm:text-sm">Notifications</p>
           </div>
         </div>
-        <div class="bg-background rounded-lg p-4 flex items-center gap-4">
-          <ServerIcon size="24" class="text-accent" />
+        <div class="bg-background rounded-lg p-3 sm:p-4 flex items-center gap-2 sm:gap-4">
+          <ServerIcon size="20" class="text-accent hidden sm:block" />
           <div>
-            <h3 class="text-2xl font-bold mb-1">{{ stats.servers }}</h3>
-            <p class="text-muted-foreground text-sm">Servers</p>
+            <h3 class="text-lg sm:text-2xl font-bold mb-0 sm:mb-1">{{ stats.servers }}</h3>
+            <p class="text-muted-foreground text-xs sm:text-sm">Servers</p>
           </div>
         </div>
       </div>
@@ -57,15 +59,15 @@
           </div>
           <div class="flex flex-col gap-3">
             <div v-for="(activity, index) in recentActivity" :key="index" class="flex gap-3">
-              <div class="w-9 h-9 rounded-full overflow-hidden flex-shrink-0">
+              <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden flex-shrink-0">
                 <img
                   :src="activity.userAvatar"
                   :alt="activity.userName"
                   class="w-full h-full object-cover"
                 />
               </div>
-              <div class="flex-1">
-                <p class="text-sm">
+              <div class="flex-1 min-w-0">
+                <p class="text-xs sm:text-sm">
                   <strong>{{ activity.userName }}</strong> {{ activity.action }}
                   <span class="text-accent">{{ activity.target }}</span>
                 </p>
@@ -88,11 +90,11 @@
               class="flex items-center p-2 rounded-lg cursor-pointer hover:bg-secondary-muted"
               @click="goToServer(server.id)"
             >
-              <div class="w-10 h-10 rounded-lg overflow-hidden mr-3">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden mr-3">
                 <img :src="server.icon" :alt="server.name" class="w-full h-full object-cover" />
               </div>
-              <div class="flex-1">
-                <h4 class="text-sm font-semibold">{{ server.name }}</h4>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-semibold truncate">{{ server.name }}</h4>
                 <p class="text-xs text-muted-foreground">{{ server.memberCount }} members</p>
               </div>
               <div class="flex items-center">
@@ -120,14 +122,14 @@
               class="flex items-center p-2 rounded-lg cursor-pointer hover:bg-secondary-muted"
               @click="openChat(dm.id)"
             >
-              <div class="relative w-10 h-10 rounded-full overflow-hidden">
+              <div class="relative w-8 h-8 sm:w-10 sm:h-10 rounded-full overflow-hidden">
                 <img :src="dm.avatar" :alt="dm.name" class="w-full h-full object-cover" />
                 <span
                   class="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full border-2 border-card"
                   :class="dm.status === 'online' ? 'bg-success' : 'bg-muted-foreground'"
                 ></span>
               </div>
-              <div class="flex-1 ml-3">
+              <div class="flex-1 ml-3 min-w-0">
                 <h4 class="text-sm font-semibold">{{ dm.name }}</h4>
                 <p class="text-xs text-muted-foreground truncate max-w-[180px]">
                   {{ dm.lastMessage }}
@@ -151,19 +153,21 @@
               class="flex items-center p-2 rounded-lg bg-secondary-muted"
             >
               <div
-                class="flex flex-col items-center justify-center w-10 h-10 bg-card border-muted border-solid border rounded-lg mr-3"
+                class="flex flex-col items-center justify-center w-8 h-8 sm:w-10 sm:h-10 bg-card border-muted border-solid border rounded-lg mr-3"
               >
-                <span class="text-lg font-bold leading-none">{{ event.day }}</span>
-                <span class="text-xs uppercase">{{ event.month }}</span>
+                <span class="text-sm sm:text-lg font-bold leading-none">{{ event.day }}</span>
+                <span class="text-[10px] sm:text-xs uppercase">{{ event.month }}</span>
               </div>
-              <div class="flex-1">
-                <h4 class="text-sm font-semibold">{{ event.title }}</h4>
-                <p class="text-xs text-muted-foreground">{{ event.time }} • {{ event.server }}</p>
+              <div class="flex-1 min-w-0">
+                <h4 class="text-sm font-semibold truncate">{{ event.title }}</h4>
+                <p class="text-xs text-muted-foreground truncate">
+                  {{ event.time }} • {{ event.server }}
+                </p>
               </div>
               <button
-                class="rounded-md px-3 py-1 text-xs font-semibold flex items-center gap-1 hover:bg-accent-foreground bg-card border-muted border-solid border"
+                class="rounded-md px-2 sm:px-3 py-1 text-xs font-semibold flex items-center gap-1 hover:bg-accent-foreground bg-card border-muted border-solid border"
               >
-                <CalendarIcon size="16" />
+                <CalendarIcon size="14" class="hidden sm:inline" />
                 <span>RSVP</span>
               </button>
             </div>

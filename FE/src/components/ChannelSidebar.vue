@@ -1,24 +1,29 @@
 <template>
   <div
-    class="bg-muted w-64 flex-shrink-0 overflow-y-auto transition-all duration-300"
-    :class="isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0 md:w-20'"
+    class="bg-muted flex-shrink-0 overflow-y-auto transition-all duration-300 fixed md:relative z-30"
+    :class="[
+      isMobileView
+        ? isOpen
+          ? 'translate-x-0 w-[80%] max-w-[280px] h-screen'
+          : '-translate-x-full w-0'
+        : isOpen
+          ? 'w-64'
+          : 'w-20',
+      'md:translate-x-0 md:h-[calc(100vh-3.5rem)] fixed top-0' // Full height minus ServerBar height on desktop
+    ]"
   >
     <div class="p-4">
       <div class="flex items-center justify-between mb-6">
-        <h2 class="text-lg font-bold text-primary" :class="isOpen ? '' : 'md:hidden'">Channels</h2>
+        <h2 class="text-lg font-bold text-primary" :class="{ hidden: !isOpen && !isMobileView }">
+          Channels
+        </h2>
         <button
           @click="$emit('toggle')"
-          class="p-2 bg-primary rounded-full text-card hover:text-primary hover:bg-card md:hidden"
+          class="p-2 bg-background rounded-full text-card hover:text-primary hover:bg-card"
+          :class="{ 'md:hidden': isMobileView }"
         >
-          <ChevronLeftIcon v-if="isOpen" size="18" />
-          <ChevronRightIcon v-else size="18" />
-        </button>
-        <button
-          @click="$emit('toggle')"
-          class="hidden bg-primary md:block p-2 rounded-full text-card hover:text-primary hover:bg-card"
-        >
-          <ChevronLeftIcon v-if="isOpen" size="18" />
-          <ChevronRightIcon v-else size="18" />
+          <ChevronLeftIcon class="text-accent" v-if="isOpen" size="18" />
+          <ChevronRightIcon class="text-accent" v-else size="18" />
         </button>
       </div>
 
@@ -87,7 +92,8 @@ defineProps({
   },
   activeChannel: {
     type: Number,
-    required: true
+    required: false,
+    default: null
   },
   activeUser: {
     type: Number,
@@ -96,6 +102,10 @@ defineProps({
   isOpen: {
     type: Boolean,
     default: true
+  },
+  isMobileView: {
+    type: Boolean,
+    default: false
   }
 })
 

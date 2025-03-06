@@ -13,7 +13,7 @@
       </div>
     </div>
 
-    <div class="flex space-x-3 py-1">
+    <div class="flex space-x-3 py-1 overflow-x-auto scrollbar-hide pl-1">
       <div
         v-for="server in servers"
         :key="server.serverId"
@@ -41,7 +41,7 @@
         </div>
 
         <div
-          class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-[rgb(var(--popover))] text-[rgb(var(--popover-foreground))] text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap"
+          class="absolute -top-10 left-1/2 transform -translate-x-1/2 bg-[rgb(var(--popover))] text-[rgb(var(--popover-foreground))] text-xs py-1 px-2 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10"
         >
           {{ server.name }}
         </div>
@@ -50,9 +50,9 @@
 
     <div class="flex-shrink-0 ml-3">
       <div
-        class="w-10 h-10 bg-[rgb(var(--muted))] rounded-full flex items-center justify-center cursor-pointer hover:bg-[rgb(var(--card))]"
+        class="w-8 h-8 sm:w-10 sm:h-10 bg-[rgb(var(--muted))] rounded-full flex items-center justify-center cursor-pointer hover:bg-[rgb(var(--card))]"
       >
-        <PlusIcon size="20" class="text-[rgb(var(--foreground))]" />
+        <PlusIcon size="18" class="text-[rgb(var(--foreground))]" />
       </div>
     </div>
 
@@ -64,7 +64,7 @@
           <UserIcon size="18" />
         </button>
         <div
-          class="absolute z-50 top-full right-0 mt-2 w-48 bg-[rgb(var(--popover))] rounded-lg shadow-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all"
+          class="absolute z-50 top-full right-0 mt-2 w-48 bg-[rgb(var(--muted))] rounded-lg shadow-lg p-3 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all"
         >
           <div class="text-sm font-medium text-[rgb(var(--muted-foreground))] mb-2">
             User Settings
@@ -124,6 +124,7 @@ defineProps({
   },
   activeServer: {
     type: Number,
+    required: false,
     default: null // Set default value to null to make it optional
   }
 })
@@ -143,5 +144,17 @@ const toggleTheme = () => {
 </script>
 
 <style scoped>
-/* Add any additional styles if needed */
+/* Hide scrollbar but allow scrolling */
+.scrollbar-hide {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+.scrollbar-hide::-webkit-scrollbar {
+  display: none; /* Chrome, Safari and Opera */
+}
+
+/* Ensure the height of the ServerBar is consistent */
+.h-14 {
+  height: 3.5rem;
+}
 </style>
