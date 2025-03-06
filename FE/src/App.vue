@@ -23,7 +23,6 @@
         @change-user="setActiveUser"
       />
       <ChatArea
-        v-if="!isMobileView || (isMobileView && activeChannel == null)"
         :messages="messagesStore.messages"
         :channels="channels"
         :activeChannel="activeChannel"
@@ -33,67 +32,6 @@
         @toggle-members-sidebar="toggleMembersSidebar"
         @send-message="sendMessage"
       />
-      <div class="w-full h-full" v-else>
-        <div class="sticky left-0 w-full bg-background h-full">
-          <div class="p-4">
-            <div class="flex items-center justify-between mb-6">
-              <h2
-                class="text-lg font-bold text-primary"
-                :class="{ hidden: !isOpen && !isMobileView }"
-              >
-                Channels
-              </h2>
-            </div>
-
-            <div class="space-y-1">
-              <div
-                v-for="channel in channels"
-                :key="channel.id"
-                class="flex items-center p-2 rounded-lg cursor-pointer transition-colors"
-                :class="
-                  channel.id === activeChannel
-                    ? 'bg-secondary-muted text-primary'
-                    : 'text-muted-foreground hover:bg-card hover:text-primary'
-                "
-                @click="$emit('change-channel', channel.id)"
-              >
-                <HashIcon v-if="channel.type === 'text'" size="18" class="flex-shrink-0" />
-                <VolumeXIcon v-else-if="channel.type === 'voice'" size="18" class="flex-shrink-0" />
-                <span
-                  v-if="isOpen"
-                  :class="channel.id === activeChannel ? 'font-bold' : ''"
-                  class="ml-2 truncate"
-                  >{{ channel.name }}</span
-                >
-              </div>
-            </div>
-
-            <div class="mt-8 mb-4" v-if="isOpen">
-              <h2 class="text-lg font-bold text-primary mb-4">Direct Messages</h2>
-              <div class="space-y-2">
-                <div
-                  v-for="user in directMessages"
-                  :key="user.id"
-                  class="flex items-center p-2 rounded-lg cursor-pointer transition-colors"
-                  :class="
-                    user.id === activeUser
-                      ? 'bg-secondary-muted text-primary'
-                      : 'text-muted-foreground hover:bg-card hover:text-primary'
-                  "
-                  @click="$emit('change-user', user.id)"
-                >
-                  <UserAvatar
-                    :name="user.name"
-                    :image="user.avatar"
-                    :status="user.online ? 'online' : 'offline'"
-                  />
-                  <span class="ml-2 truncate">{{ user.name }}</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
 
       <MembersSidebar
         :onlineMembers="onlineMembers"
@@ -108,7 +46,6 @@
 
 <script setup>
 import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
-import { HashIcon, VolumeXIcon } from 'lucide-vue-next'
 import axios from 'axios'
 import ServerBar from './components/ServerBar.vue'
 import ChannelSidebar from './components/ChannelSidebar.vue'
