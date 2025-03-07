@@ -1,0 +1,18 @@
+services:
+  kiwi-postgres:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    restart: always
+    environment:
+      POSTGRES_DB: kiwi-postgres
+      POSTGRES_USER: kiwi
+      POSTGRES_PASSWORD: kiwi
+      TZ: Europe/Madrid
+    volumes:
+      - kiwi_postgres_data:/var/lib/postgresql/data
+    ports:
+      - 55432:5432
+    command: ["postgres", "-c", "log_statement=all"]
+volumes:
+  kiwi_postgres_data:
